@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -63,6 +65,7 @@ namespace ABFormatter
         {
             string formattedText = string.Empty;
             string cleanedText = string.Empty;
+            var sufixesToAvoid = new char[] { ' ', '_' };
             try
             {
                 cleanedText = Regex.Replace(TextToTranslate.Text, @"\s+", " ");
@@ -139,9 +142,9 @@ namespace ABFormatter
                 catch
                 {
                 }
-                PRName.Text = RemoveAllInvalidSufixes(prTemplate, new char[]{' ', '_'});
+                PRName.Text = RemoveAllInvalidSufixes(prTemplate, sufixesToAvoid);
             }
-            secondFormmattedString = RemoveAllInvalidSufixes(secondFormmattedString, new char[] { ' ', '_' });
+            secondFormmattedString = RemoveAllInvalidSufixes(secondFormmattedString, sufixesToAvoid);
             return secondFormmattedString;
 
         }
@@ -151,6 +154,48 @@ namespace ABFormatter
             if (string.IsNullOrEmpty(TextToTranslate.Text))
                 return;
             TranslatedText.Text = FormatText();
+        }
+        void SaveFile(string filePath)
+        {
+            try
+            {
+                // Create a new text file and open it for writing
+                using (StreamWriter writer = new StreamWriter(filePath))
+                {
+                    // Write some text to the file
+                    if (!string.IsNullOrEmpty(TranslatedText.Text))
+                        writer.WriteLine(TranslatedText.Text);
+
+                    if (!string.IsNullOrEmpty(PRName.Text))
+                        writer.WriteLine(PRName.Text);
+                }
+            }
+            catch
+            {
+            }
+        }
+        private void OnSaveCLick(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(PRName.Text) && string.IsNullOrEmpty(TranslatedText.Text))
+            {
+                MessageBox.Show("you didn't provided proper activity name to save it !");
+            }
+            // Create a new SaveFileDialog instance
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            // Set the properties of the SaveFileDialog
+            saveFileDialog.Filter = "Text Files|*.txt";
+            saveFileDialog.Title = "Create Text File";
+
+            // Show the SaveFileDialog and wait for the user's response
+            var result = saveFileDialog.ShowDialog();
+
+            // Process the user's response
+            if (result == true && !string.IsNullOrEmpty(saveFileDialog.FileName))
+            {
+                SaveFile(saveFileDialog.FileName);
+                MessageBox.Show("File Saved");
+            }
         }
     }
 }
