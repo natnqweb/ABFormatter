@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,13 +11,10 @@ namespace ABFormatter
 {
     static public class HistoryTracker
     {
-        public static string RegistryKey = "HKEY_CURRENT_USER\\Software\\ABFormatter\\ABFormatterSettings";
-        public static string ValueName = "AutoSave";
-        static public void Track(string msg)
+        static string RegistryKey = "HKEY_CURRENT_USER\\Software\\ABFormatter\\ABFormatterSettings";
+        static string ValueName = "AutoSave";
+        public static bool IsTrackingOn()
         {
-            // Specify the Registry key and value names
-            string historyFileName = string.Empty;
-            // Read the flag value from the Registry
             int autoSave = 0;
             try
             {
@@ -24,9 +22,25 @@ namespace ABFormatter
 
             }
             catch
-            {}
-
-            if (autoSave == 0)
+            { }
+            return autoSave != 0;
+        }
+        static public void SetTracking(bool val)
+        {
+            int value = val ? 1 : 0;
+            try
+            {
+                Registry.SetValue(RegistryKey, ValueName, value);
+            }
+            catch
+            { }
+        }
+        static public void Track(string msg)
+        {
+            // Specify the Registry key and value names
+            string historyFileName = string.Empty;
+            // Read the flag value from the Registry
+            if (!IsTrackingOn())
             {
                 return;
             }
@@ -37,10 +51,12 @@ namespace ABFormatter
                 string executableFolder = Path.GetDirectoryName(executablePath);
                 historyFileName = executableFolder + "\\workHistory.txt";
             }
-            catch { return; }
+            catch { Debug.Assert(false); return; }
             if (historyFileName == "\\workHistory.txt")
+            {
+                Debug.Assert(false);
                 return;
-
+            }
             string dateAndTime = DateTime.Now.ToString("dddd, MMMM d, yyyy h:mm tt");
             if (string.IsNullOrEmpty(msg))
                 return;

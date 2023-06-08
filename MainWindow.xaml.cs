@@ -33,21 +33,14 @@ namespace ABFormatter
         }
         void LoadAutoSaveCheckBoxFromRegistry()
         {
-            try
-            {
-                var val = (int)Registry.GetValue(HistoryTracker.RegistryKey, HistoryTracker.ValueName, 0);
-                RegAutoSaveCheckBox.IsChecked = val != 0;
-            }
-            catch
-            {
-            }
+            RegAutoSaveCheckBox.IsChecked = HistoryTracker.IsTrackingOn();
         }
         string RemoveAllInvalidSufixes(string str, char[] sufixes)
         {
             while (str.Length > 0)
             {
                 bool bAnySufixFound = false;
-                foreach(var suf in sufixes)
+                foreach (var suf in sufixes)
                 {
                     if (str[str.Length - 1] == suf)
                     {
@@ -56,7 +49,7 @@ namespace ABFormatter
                     }
                 }
 
-                if(!bAnySufixFound)
+                if (!bAnySufixFound)
                 {
                     break;
                 }
@@ -88,8 +81,8 @@ namespace ABFormatter
             string activityNumber = string.Empty;
             bool startNumbering = false;
             int lastIndex = 0;
-            
-            for(int i=0; i < cleanedText.Length;i++)
+
+            for (int i = 0; i < cleanedText.Length; i++)
             {
                 var ch = cleanedText[i];
                 if (ch == '#')
@@ -97,28 +90,28 @@ namespace ABFormatter
                     startNumbering = true;
                     continue;
                 }
-                if(startNumbering)
+                if (startNumbering)
                 {
-                    if(char.IsAsciiDigit(ch))
+                    if (char.IsAsciiDigit(ch))
                     {
                         activityNumber += ch;
                     }
-                    else if(activityNumber.Length > 0)
+                    else if (activityNumber.Length > 0)
                     {
-                        lastIndex = i+1;
+                        lastIndex = i + 1;
                         break;
                     }
                 }
             }
-            if(activityNumber.Length > 0)
+            if (activityNumber.Length > 0)
             {
                 formattedText += ("activity/" + activityNumber + '/');
             }
             string originalDescription = string.Empty;
-            for (int i = lastIndex;  i < cleanedText.Length; i++)
+            for (int i = lastIndex; i < cleanedText.Length; i++)
             {
                 if (lastIndex == 0 && !string.IsNullOrEmpty(formattedText))
-                        break;
+                    break;
                 var ch = cleanedText[i];
                 if (char.IsAsciiLetterOrDigit(ch))
                 {
@@ -140,7 +133,7 @@ namespace ABFormatter
             catch
             {
                 return formattedText;
-                
+
             }
             string[] prParams = secondFormmattedString.Split('/');
             if (prParams?.Length == 3)
@@ -189,19 +182,11 @@ namespace ABFormatter
         private void OnAutoSaveCheckClick(object sender, RoutedEventArgs e)
         {
             int val = 0;
-            if(RegAutoSaveCheckBox.IsChecked.HasValue)
+            if (RegAutoSaveCheckBox.IsChecked.HasValue)
             {
-                val = RegAutoSaveCheckBox.IsChecked.Value ? 1 : 0;
+                HistoryTracker.SetTracking(RegAutoSaveCheckBox.IsChecked.Value);
             }
-            try
-            {
-                Registry.SetValue(HistoryTracker.RegistryKey, HistoryTracker.ValueName, val);
 
-            }
-            catch
-            {
-
-            }
         }
         private void OnSaveCLick(object sender, RoutedEventArgs e)
         {
@@ -251,10 +236,10 @@ namespace ABFormatter
             string result = "Branch: " + TranslatedText.Text + "\n\tPR: " + PRName.Text;
             if (!string.IsNullOrEmpty(strAdditionalMessage))
             {
-                strAdditionalMessage += ("\n\t"+result);
+                strAdditionalMessage += ("\n\t" + result);
                 return strAdditionalMessage;
             }
-            
+
             return result;
         }
         protected override void OnClosing(CancelEventArgs e)
