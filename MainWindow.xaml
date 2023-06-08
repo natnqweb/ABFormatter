@@ -5,18 +5,16 @@
         Title="ABFormatter" Height="450" Width="800"
         ResizeMode="NoResize">
     <Grid>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <TextBox TextWrapping="Wrap" TextOptions.TextFormattingMode="Ideal" TextAlignment="Justify"  Grid.Row="0" Grid.Column="0" MinHeight="100" Height="380" Width="400" Name="TextToTranslate"></TextBox>
-            <TextBox TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" MinHeight="100" Height="380" Width="400" Name="TranslatedText" ></TextBox>
-            
-        </Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150"></RowDefinition>
+            <RowDefinition Height="150"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBox BorderThickness="2" BorderBrush="Black" Grid.RowSpan="2" TextWrapping="Wrap" TextOptions.TextFormattingMode="Ideal" TextAlignment="Justify"  Grid.Row="0" Grid.Column="0" MinHeight="100" Height="380" Width="400" Name="TextToTranslate"></TextBox>
+        <TextBox BorderBrush="Black" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" MinHeight="100" Height="380" Width="400" Name="TranslatedText" ></TextBox>
+        <TextBox BorderBrush="Black" Name="PRName" Grid.Row="1" Grid.Column="1" Height="150"></TextBox>
     </Grid>
 </Window>

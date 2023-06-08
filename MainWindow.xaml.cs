@@ -28,6 +28,37 @@ namespace ABFormatter
             InitializeComponent();
             TextToTranslate.TextChanged += TextToTranslate_TextChanged;
         }
+        string RemoveAllInvalidSufixes(string str, char[] sufixes)
+        {
+            while (str.Length > 0)
+            {
+                bool bAnySufixFound = false;
+                foreach(var suf in sufixes)
+                {
+                    if (str[str.Length - 1] == suf)
+                    {
+                        bAnySufixFound = true;
+                        break;
+                    }
+                }
+
+                if(!bAnySufixFound)
+                {
+                    break;
+                }
+
+                try
+                {
+                    str = str.Remove(str.Length - 1);
+
+                }
+                catch
+                {
+                    break;
+                }
+            }
+            return str;
+        }
         string FormatText()
         {
             string formattedText = string.Empty;
@@ -42,6 +73,7 @@ namespace ABFormatter
             string activityNumber = string.Empty;
             bool startNumbering = false;
             int lastIndex = 0;
+            
             for(int i=0; i < cleanedText.Length;i++)
             {
                 var ch = cleanedText[i];
@@ -67,6 +99,7 @@ namespace ABFormatter
             {
                 formattedText += ("activity/" + activityNumber + '/');
             }
+            string originalDescription = string.Empty;
             for (int i = lastIndex;  i < cleanedText.Length; i++)
             {
                 if (lastIndex == 0 && !string.IsNullOrEmpty(formattedText))
@@ -75,10 +108,13 @@ namespace ABFormatter
                 if (char.IsAsciiLetterOrDigit(ch))
                 {
                     formattedText += char.ToLower(ch);
+                    originalDescription += ch;
                 }
                 else
                 {
                     formattedText += '_';
+                    originalDescription += ch;
+
                 }
             }
             string secondFormmattedString;
@@ -91,6 +127,21 @@ namespace ABFormatter
                 return formattedText;
                 
             }
+            string[] prParams = secondFormmattedString.Split('/');
+            if (prParams?.Length == 3)
+            {
+                string activityNr = prParams[1];
+                string prTemplate = string.Empty;
+                try
+                {
+                    prTemplate = string.Format("Activity({0}), {1}", activityNr, originalDescription);
+                }
+                catch
+                {
+                }
+                PRName.Text = RemoveAllInvalidSufixes(prTemplate, new char[]{' ', '_'});
+            }
+            secondFormmattedString = RemoveAllInvalidSufixes(secondFormmattedString, new char[] { ' ', '_' });
             return secondFormmattedString;
 
         }
