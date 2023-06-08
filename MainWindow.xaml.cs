@@ -176,9 +176,10 @@ namespace ABFormatter
         }
         private void OnSaveCLick(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(PRName.Text) && string.IsNullOrEmpty(TranslatedText.Text))
+            if (string.IsNullOrEmpty(PRName.Text) || string.IsNullOrEmpty(TranslatedText.Text))
             {
                 MessageBox.Show("you didn't provided proper activity name to save it !");
+                return;
             }
             // Create a new SaveFileDialog instance
             SaveFileDialog saveFileDialog = new SaveFileDialog();
