@@ -28,7 +28,19 @@ namespace ABFormatter
         public MainWindow()
         {
             InitializeComponent();
+            LoadAutoSaveCheckBoxFromRegistry();
             TextToTranslate.TextChanged += TextToTranslate_TextChanged;
+        }
+        void LoadAutoSaveCheckBoxFromRegistry()
+        {
+            try
+            {
+                var val = (int)Registry.GetValue(HistoryTracker.RegistryKey, HistoryTracker.ValueName, 0);
+                RegAutoSaveCheckBox.IsChecked = val != 0;
+            }
+            catch
+            {
+            }
         }
         string RemoveAllInvalidSufixes(string str, char[] sufixes)
         {
@@ -174,9 +186,26 @@ namespace ABFormatter
             {
             }
         }
+        private void OnAutoSaveCheckClick(object sender, RoutedEventArgs e)
+        {
+            int val = 0;
+            if(RegAutoSaveCheckBox.IsChecked.HasValue)
+            {
+                val = RegAutoSaveCheckBox.IsChecked.Value ? 1 : 0;
+            }
+            try
+            {
+                Registry.SetValue(HistoryTracker.RegistryKey, HistoryTracker.ValueName, val);
+
+            }
+            catch
+            {
+
+            }
+        }
         private void OnSaveCLick(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(PRName.Text) || string.IsNullOrEmpty(TranslatedText.Text))
+            if (!HasResult())
             {
                 MessageBox.Show("you didn't provided proper activity name to save it !");
                 return;
@@ -196,7 +225,44 @@ namespace ABFormatter
             {
                 SaveFile(saveFileDialog.FileName);
                 MessageBox.Show("File Saved");
+                string msg;
+                try
+                {
+                    msg = string.Format("Saved to file: {0}", saveFileDialog.FileName);
+                    HistoryTracker.Track(GetResultFormatted(msg));
+                }
+                catch
+                {
+
+                }
             }
+        }
+
+        public override void EndInit()
+        {
+            base.EndInit();
+        }
+        bool HasResult()
+        {
+            return !string.IsNullOrEmpty(TranslatedText.Text) && !string.IsNullOrEmpty(PRName.Text);
+        }
+        string GetResultFormatted(string strAdditionalMessage)
+        {
+            string result = "Branch: " + TranslatedText.Text + "\n\tPR: " + PRName.Text;
+            if (!string.IsNullOrEmpty(strAdditionalMessage))
+            {
+                strAdditionalMessage += ("\n\t"+result);
+                return strAdditionalMessage;
+            }
+            
+            return result;
+        }
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (HasResult())
+                HistoryTracker.Track(GetResultFormatted(string.Empty));
+
+            base.OnClosing(e);
         }
     }
 }

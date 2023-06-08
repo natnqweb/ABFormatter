@@ -17,6 +17,7 @@
         <TextBox BorderThickness="2" Margin="5,5,5,5" BorderBrush="Black" Grid.RowSpan="2" TextWrapping="Wrap" TextOptions.TextFormattingMode="Ideal" TextAlignment="Justify"  Grid.Row="0" Grid.Column="0" MinHeight="100" Height="380" Width="380" Name="TextToTranslate"></TextBox>
         <TextBox BorderBrush="Black" Margin="5,5,5,5" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" MinHeight="100" Height="380" Width="380" Name="TranslatedText" ></TextBox>
         <TextBox BorderBrush="Black" Margin="5,5,5,5" TextWrapping="Wrap" Name="PRName" Grid.Row="1" Grid.Column="1" Height="150" Width="380"></TextBox>
-        <Button Grid.Row="2" Grid.Column="2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0" Content="Save" Click="OnSaveCLick"></Button>
+        <Button Grid.Row="2" Grid.Column="1" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0" Content="Save" Click="OnSaveCLick"></Button>
+        <CheckBox Name="RegAutoSaveCheckBox" Grid.Row="2" Grid.Column="0" Content="History Saving" Click="OnAutoSaveCheckClick"></CheckBox>
     </Grid>
 </Window>
